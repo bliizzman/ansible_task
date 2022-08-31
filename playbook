@@ -1,0 +1,25 @@
+- name: Run docker container with nginx
+  hosts: docker
+  become: True
+  vars:
+    - username: "*******"
+    - password: "*******"
+  tasks:
+    - name: install docker.io
+      apt: name=docker.io update_cache=yes
+    - name: install pip
+      apt: name=python3-pip update_cache=yes
+    - name: install docker
+      ansible.builtin.pip:
+        name: docker
+    - name: Authenticate with docker repository  
+      docker_login:
+        username: "{{ username }}"
+        password: "{{ password }}"
+    - name: start nginx container
+      docker_container:
+        name: nginx
+        image: blizzzm/nginx
+        pull: yes
+        ports:
+          - "0.0.0.0:80:8081"
